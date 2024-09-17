@@ -1,0 +1,40 @@
+steps:
+  - id: "install-dependencies"
+    name: "gcr.io/cloud-builders/npm"
+    args: ["install"]
+
+  - id: "build"
+    name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "build",
+        "-t",
+        "us-central1-docker.pkg.dev/k8s-assignment-428200/kubernetes-assignment-repo/kubernetes-image1",
+        ".",
+      ]
+
+  - id: "push"
+    name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "push",
+        "us-central1-docker.pkg.dev/k8s-assignment-428200/kubernetes-assignment-repo/kubernetes-image1",
+      ]
+
+  - name: "gcr.io/cloud-builders/kubectl"
+    args: ["apply", "-f", "persistent-volume-claim.yaml"]
+    env:
+      - "CLOUDSDK_COMPUTE_REGION=us-central1"
+      - "CLOUDSDK_COMPUTE_ZONE=us-central1-c"
+      - "CLOUDSDK_CONTAINER_CLUSTER=k8s-cluster"
+
+  - id: "deploy"
+    name: "gcr.io/cloud-builders/gke-deploy"
+    args:
+      - run
+      - --filename=./deployment/
+      - --location=us-central1
+      - --cluster=k8s-cluster
+
+options:
+  logging: CLOUD_LOGGING_ONLY

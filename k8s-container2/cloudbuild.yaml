@@ -1,0 +1,33 @@
+steps:
+  - id: "install"
+    name: "gcr.io/cloud-builders/npm"
+    args: ["install"]
+
+  - id: "build"
+    name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "build",
+        "-t",
+        "us-central1-docker.pkg.dev/k8s-assignment-428200/kubernetes-assignment-repo/kubernetes-image2",
+        ".",
+      ]
+
+  - id: "push"
+    name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "push",
+        "us-central1-docker.pkg.dev/k8s-assignment-428200/kubernetes-assignment-repo/kubernetes-image2",
+      ]
+
+  - id: "deploy"
+    name: "gcr.io/cloud-builders/gke-deploy"
+    args:
+      - run
+      - --filename=./deployment/
+      - --location=us-central1
+      - --cluster=k8s-cluster
+
+options:
+  logging: CLOUD_LOGGING_ONLY

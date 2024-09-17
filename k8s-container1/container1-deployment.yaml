@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubernetes-image1-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kubernetes-image1
+  template:
+    metadata:
+      labels:
+        app: kubernetes-image1
+    spec:
+      volumes:
+        - name: storage-persistent-volume
+          persistentVolumeClaim:
+            claimName: pvc
+      containers:
+        - name: kubernetes-container1
+          image: us-central1-docker.pkg.dev/k8s-assignment-428200/kubernetes-assignment-repo/kubernetes-image1
+          ports:
+            - containerPort: 6000
+              name: "http-server"
+          volumeMounts:
+            - mountPath: /harsh_PV_dir
+              name: storage-persistent-volume
